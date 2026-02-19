@@ -1,0 +1,30 @@
+# ByteLink Configuration Template
+# Copy this file to application.yaml and update with your values
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/bytelink
+    username: your_mysql_username
+    password: your_mysql_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      # Options: create, create-drop, update, validate, none
+      ddl-auto: update
+    show-sql: true  # Set to false in production
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true  # Pretty print SQL (development only)
+        
+# Server configuration (optional)
+server:
+  port: 8080
+  
+# Logging configuration (optional)
+logging:
+  level:
+    com.mint.bytelink: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
