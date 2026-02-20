@@ -1,7 +1,7 @@
 package com.mint.bytelink.controller;
 
-import com.mint.bytelink.Dto.UrlDetailsRequestDTO;
-import com.mint.bytelink.Dto.UrlDetailsResponseDTO;
+import com.mint.bytelink.dto.UrlDetailsRequestDTO;
+import com.mint.bytelink.dto.UrlDetailsResponseDTO;
 import com.mint.bytelink.entity.UrlDetails;
 import com.mint.bytelink.service.UrlDetailsService;
 import com.mint.bytelink.util.UrlDetailsMapper;

@@ -1,92 +1,113 @@
-# 🔗 ByteLink - URL Shortener
+# 🔗 ByteLink — URL Shortener
 
-A simple and efficient URL shortener service built with Spring Boot and MySQL.
+A lightweight, production-ready URL shortener REST API built with **Spring Boot 4** and **MySQL**. ByteLink converts long URLs into compact, Base62-encoded short codes and tracks every click with analytics data.
+
+---
 
 ## 📋 Table of Contents
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [API Endpoints](#api-endpoints)
-- [Usage Examples](#usage-examples)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
+
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Prerequisites](#-prerequisites)
+- [Getting Started](#-getting-started)
+- [Configuration](#-configuration)
+- [API Reference](#-api-reference)
+- [How It Works](#-how-it-works)
+- [Project Structure](#-project-structure)
+- [Security Notes](#-security-notes)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
 
 ## ✨ Features
 
-- ✅ Shorten long URLs to compact codes
-- ✅ Base62 encoding for short URL generation
-- ✅ Automatic URL expiration (90 days)
-- ✅ Update long URL for existing short codes
-- ✅ Delete URLs
-- ✅ Retrieve all short URLs for a given long URL
-- ✅ Global exception handling
-- ✅ Input validation
-- ✅ RESTful API design
+- 🔗 Shorten any long URL into a compact 6-character Base62 code
+- 📊 Click analytics — tracks click count and User-Agent per visit
+- ⏳ Automatic URL expiration (90 days)
+- 🔄 Update the destination URL for an existing short code
+- 🗑️ Delete short URLs
+- 🔍 Look up all short URLs mapped to a given long URL
+- 🚦 Global exception handling with structured error responses
+- ✅ Input validation via Jakarta Bean Validation
+- 🏗️ Clean layered architecture (Controller → Service → Repository)
+
+---
 
 ## 🛠 Tech Stack
 
-- **Backend Framework:** Spring Boot 4.0.2
-- **Language:** Java 17
-- **Database:** MySQL
-- **ORM:** Spring Data JPA / Hibernate
-- **Build Tool:** Maven
-- **Libraries:** 
-  - Lombok
-  - Spring Boot Validation
-  - Spring Boot Web
+| Layer | Technology |
+|---|---|
+| Framework | Spring Boot 4.0.2 |
+| Language | Java 17 |
+| Database | MySQL 8.0+ |
+| ORM | Spring Data JPA / Hibernate |
+| Build Tool | Maven (Maven Wrapper included) |
+| Utilities | Lombok, Jakarta Validation |
+
+---
 
 ## 📦 Prerequisites
 
-Before running this project, make sure you have:
-
-- Java 17 or higher
-- Maven 3.6+
+- Java 17+
+- Maven 3.6+ *(or use the included `./mvnw` wrapper)*
 - MySQL 8.0+
-- Your favorite IDE (IntelliJ IDEA, Eclipse, VS Code)
 
-## 🚀 Installation
+---
 
-### 1. Clone the repository
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
 ```bash
-git clone https://github.com/yourusername/ByteLink.git
+git clone https://github.com/99mint/ByteLink.git
 cd ByteLink
 ```
 
-### 2. Create MySQL database
+### 2. Create the MySQL Database
+
 ```sql
 CREATE DATABASE bytelink;
 ```
 
-### 3. Configure database credentials
-Edit `src/main/resources/application.yaml` and update:
-```yaml
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/bytelink
-    username: your_mysql_username
-    password: your_mysql_password
+### 3. Configure Environment Variables
+
+Copy the example env file and fill in your values:
+
+```bash
+cp env.example .env
 ```
 
-### 4. Build the project
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=bytelink
+DB_USERNAME=root
+DB_PASSWORD=your_password_here
+SERVER_PORT=8080
+```
+
+Then update `src/main/resources/application.yaml` with your database credentials (or wire in the env vars).
+
+### 4. Build the Project
+
 ```bash
 ./mvnw clean install
 ```
 
-### 5. Run the application
+### 5. Run the Application
+
 ```bash
 ./mvnw spring-boot:run
 ```
 
-The application will start on `http://localhost:8080`
+The server starts at `http://localhost:8080`.
+
+---
 
 ## ⚙️ Configuration
 
-### Application Properties
-
-Located at `src/main/resources/application.yaml`:
+`src/main/resources/application.yaml`:
 
 ```yaml
 spring:
@@ -105,198 +126,179 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 ```
 
-**Key Configuration Options:**
-- `ddl-auto: update` - Automatically updates database schema
-- `show-sql: true` - Shows SQL queries in console (useful for debugging)
+> ⚠️ Set `show-sql: false` and use environment-injected credentials before going to production.
 
-## 📡 API Endpoints
+---
 
-### Base URL: `http://localhost:8080/links`
+## 📡 API Reference
 
-| Method | Endpoint | Description | Request Body |
-|--------|----------|-------------|--------------|
-| POST | `/create` | Create a short URL | `{"longUrl": "https://example.com"}` |
-| GET | `?longUrl=...` | Get all short URLs for a long URL | Query param: `longUrl` |
-| PUT | `/{shortUrl}` | Update long URL for a short code | `{"longUrl": "https://newurl.com"}` |
-| DELETE | `/{shortUrl}` | Delete a short URL | - |
+### Link Management — `/links`
 
-### Redirect Endpoint
+| Method | Endpoint | Description | Body |
+|---|---|---|---|
+| `POST` | `/links/create` | Create a short URL | `{ "longUrl": "https://..." }` |
+| `GET` | `/links?longUrl=...` | Get all short URLs for a long URL | Query param |
+| `PUT` | `/links/{shortUrl}` | Update destination URL | `{ "longUrl": "https://..." }` |
+| `DELETE` | `/links/{shortUrl}` | Delete a short URL | — |
+
+### Redirect — `/r`
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/{shortCode}` | Redirect to original long URL |
+|---|---|---|
+| `GET` | `/r/{shortCode}` | Redirect to original URL (HTTP 307) + record click |
+
+---
 
 ## 💡 Usage Examples
 
-### 1. Create Short URL
+### Create a Short URL
 
-**Request:**
 ```bash
 curl -X POST http://localhost:8080/links/create \
   -H "Content-Type: application/json" \
-  -d '{"longUrl": "https://www.example.com/very/long/url/here"}'
+  -d '{"longUrl": "https://www.example.com/some/very/long/url"}'
 ```
 
 **Response:**
 ```json
 {
-  "id": 1,
-  "longUrl": "https://www.example.com/very/long/url/here",
-  "shortUrl": "b",
-  "createdAt": "2024-02-19T10:30:00",
-  "expiration": "2024-05-19T10:30:00"
+  "longUrl": "https://www.example.com/some/very/long/url",
+  "shortUrl": "00000B",
+  "createdAt": "2025-02-20T10:30:00",
+  "expiration": "2025-05-21T10:30:00"
 }
 ```
 
-### 2. Access Short URL
+### Redirect via Short Code
 
 ```bash
-curl http://localhost:8080/b
+curl -L http://localhost:8080/r/00000B
 ```
-This will redirect to `https://www.example.com/very/long/url/here`
 
-### 3. Get All Short URLs for a Long URL
+### Get All Short URLs for a Long URL
 
-**Request:**
 ```bash
-curl "http://localhost:8080/links?longUrl=https://www.example.com/very/long/url/here"
+curl "http://localhost:8080/links?longUrl=https://www.example.com/some/very/long/url"
 ```
 
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "longUrl": "https://www.example.com/very/long/url/here",
-    "shortUrl": "b",
-    "createdAt": "2024-02-19T10:30:00",
-    "expiration": "2024-05-19T10:30:00"
-  }
-]
-```
+### Update Destination URL
 
-### 4. Update Long URL
-
-**Request:**
 ```bash
-curl -X PUT http://localhost:8080/links/b \
+curl -X PUT http://localhost:8080/links/00000B \
   -H "Content-Type: application/json" \
-  -d '{"longUrl": "https://www.newexample.com"}'
+  -d '{"longUrl": "https://www.newdestination.com"}'
 ```
 
-### 5. Delete Short URL
+### Delete a Short URL
 
-**Request:**
 ```bash
-curl -X DELETE http://localhost:8080/links/b
+curl -X DELETE http://localhost:8080/links/00000B
 ```
+
+---
+
+## ⚙️ How It Works
+
+### Short Code Generation
+
+ByteLink uses **Base62 encoding** on the auto-incremented database ID to generate a unique, URL-safe 6-character code.
+
+**Character set:** `0–9`, `A–Z`, `a–z` → 62 characters  
+**Capacity:** 62⁶ = over **56 billion** unique codes
+
+```
+ID: 1     → Short Code: 000001
+ID: 62    → Short Code: 000010
+ID: 3844  → Short Code: 000100
+```
+
+### Click Analytics
+
+Each redirect request to `/r/{shortCode}`:
+1. Resolves the long URL from the database
+2. Increments the `clickCounts` counter on the URL record
+3. Creates a `Click` record with the timestamp and `User-Agent` header
+4. Returns HTTP 307 (Temporary Redirect) to the original URL
+
+---
 
 ## 📁 Project Structure
 
 ```
 ByteLink/
 ├── src/
-│   ├── main/
-│   │   ├── java/com/mint/bytelink/
-│   │   │   ├── controller/
-│   │   │   │   ├── RedirectController.java
-│   │   │   │   └── UrlDetailsController.java
-│   │   │   ├── dto/
-│   │   │   │   ├── UrlDetailsRequestDTO.java
-│   │   │   │   └── UrlDetailsResponseDTO.java
-│   │   │   ├── entity/
-│   │   │   │   └── UrlDetails.java
-│   │   │   ├── exception/
-│   │   │   │   ├── ErrorResponse.java
-│   │   │   │   ├── GlobalExceptionHandler.java
-│   │   │   │   └── ResourceNotFoundException.java
-│   │   │   ├── repository/
-│   │   │   │   └── UrlDetailsRepository.java
-│   │   │   ├── service/
-│   │   │   │   └── UrlDetailsService.java
-│   │   │   ├── util/
-│   │   │   │   ├── ShortCodeGenerator.java
-│   │   │   │   └── UrlDetailsMapper.java
-│   │   │   └── ByteLinkApplication.java
-│   │   └── resources/
-│   │       ├── application.yaml
-│   │       ├── static/
-│   │       └── templates/
-│   └── test/
-│       └── java/com/mint/bytelink/
-│           └── ByteLinkApplicationTests.java
-├── .gitignore
+│   └── main/
+│       ├── java/com/mint/bytelink/
+│       │   ├── ByteLinkApplication.java       # Entry point
+│       │   ├── controller/
+│       │   │   ├── RedirectController.java    # Handles redirects + click tracking
+│       │   │   └── UrlDetailsController.java  # CRUD endpoints
+│       │   ├── dto/
+│       │   │   ├── UrlDetailsRequestDTO.java
+│       │   │   └── UrlDetailsResponseDTO.java
+│       │   ├── entity/
+│       │   │   ├── Click.java                 # Click analytics entity
+│       │   │   └── UrlDetails.java            # URL record entity
+│       │   ├── exception/
+│       │   │   ├── ErrorResponse.java
+│       │   │   ├── GlobalExceptionHandler.java
+│       │   │   └── ResourceNotFoundException.java
+│       │   ├── repository/
+│       │   │   ├── ClickRepository.java
+│       │   │   └── UrlDetailsRepository.java
+│       │   ├── service/
+│       │   │   ├── ClickService.java          # Click recording logic
+│       │   │   └── UrlDetailsService.java     # URL business logic
+│       │   └── util/
+│       │       ├── ShortCodeGenerator.java    # Base62 encoder
+│       │       └── UrlDetailsMapper.java      # Entity ↔ DTO mapping
+│       └── resources/
+│           └── application.yaml
+├── env.example
 ├── pom.xml
-├── mvnw
+├── mvnw / mvnw.cmd
 └── README.md
 ```
 
-## 🏗️ Architecture
+---
 
-### How Short URL Generation Works
+## 🔒 Security Notes
 
-1. **User submits a long URL**
-2. **System saves URL to database** (gets auto-generated ID)
-3. **ID is encoded to Base62** (0-9, a-z, A-Z)
-4. **Short code is saved** and returned to user
+Before deploying to production:
 
-**Example:**
-- ID: 123 → Base62: "1Z"
-- ID: 1000 → Base62: "g8"
-
-### Base62 Encoding
-
-ByteLink uses Base62 encoding which produces short, URL-friendly codes using:
-- Numbers: 0-9 (10 characters)
-- Lowercase: a-z (26 characters)
-- Uppercase: A-Z (26 characters)
-- **Total: 62 characters**
-
-This allows for billions of unique short URLs with just a few characters!
-
-## 🔒 Security Considerations
-
-**⚠️ Important:** Before deploying to production:
-
-1. **Remove sensitive data from `application.yaml`**
-   - Never commit database passwords
-   - Use environment variables instead
-
-2. **Add rate limiting** to prevent abuse
-
-3. **Add authentication** if you want private URL shortening
-
-4. **Validate URLs** to prevent malicious redirects
-
-5. **Add HTTPS** in production
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Commit your changes (`git commit -m 'Add some amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👨‍💻 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
-
-## 🙏 Acknowledgments
-
-- Spring Boot for the amazing framework
-- Base62 encoding algorithm
-- Open source community
+- **Never commit credentials** — use environment variables or a secrets manager
+- **Add rate limiting** — protect the `/links/create` endpoint from abuse
+- **Validate URLs** — check that submitted URLs are well-formed and safe (block known malicious domains)
+- **Add authentication** — protect management endpoints (`POST`, `PUT`, `DELETE`) with JWT or API keys
+- **Enable HTTPS** — always serve over TLS in production
+- **Set `show-sql: false`** — avoid leaking query details in logs
 
 ---
 
-**Made with ❤️ using Spring Boot**
+## 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m 'Add your feature'`
+4. Push to the branch: `git push origin feature/your-feature`
+5. Open a Pull Request
+
+---
+
+## 📝 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👨‍💻 Author
+
+**Abhay Rajput**
+- GitHub: [@99mint](https://github.com/99mint)
+- Email: abhayyy2204@gmail.com
+
+---
+
+*Made with ❤️ using Spring Boot*

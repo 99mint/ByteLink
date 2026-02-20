@@ -1,12 +1,11 @@
 package com.mint.bytelink.util;
 
-import com.mint.bytelink.Dto.UrlDetailsRequestDTO;
-import com.mint.bytelink.Dto.UrlDetailsResponseDTO;
+import com.mint.bytelink.dto.UrlDetailsRequestDTO;
+import com.mint.bytelink.dto.UrlDetailsResponseDTO;
 import com.mint.bytelink.entity.UrlDetails;
 import com.mint.bytelink.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 

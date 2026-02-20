@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,6 +19,9 @@ public class UrlDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToMany(mappedBy = "urlDetails" , cascade = CascadeType.ALL)
+    List<Click> clicks = new ArrayList<>();
+
     private String longUrl;
 
     @Column(unique = true)
@@ -25,4 +30,6 @@ public class UrlDetails {
     private LocalDateTime createdAt;
 
     private LocalDateTime expiration;
+
+    private Long clickCounts = 0L;
 }

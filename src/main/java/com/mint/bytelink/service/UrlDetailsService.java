@@ -54,4 +54,14 @@ public class UrlDetailsService {
         return urlDetails.getLongUrl();
     }
 
+    public UrlDetails getUrlByShortCode(String shortUrl) {
+        return urlDetailsRepository.getUrlDetailsByShortUrl(shortUrl).orElseThrow(() -> new ResourceNotFoundException("Short URL not found"));
+    }
+
+    public void incrementClickCounter(String shortUrl){
+        UrlDetails urlDetails = urlDetailsRepository.getUrlDetailsByShortUrl(shortUrl).orElseThrow(() -> new RuntimeException("Short Url not found"));
+        urlDetails.setClickCounts(urlDetails.getClickCounts() + 1);
+        urlDetailsRepository.save(urlDetails);
+    }
+
 }

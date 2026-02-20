@@ -1,4 +1,4 @@
-package com.mint.bytelink.Dto;
+package com.mint.bytelink.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
