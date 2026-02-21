@@ -18,4 +18,10 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(400 , "Validation Failed");
         return ResponseEntity.badRequest().body(error);
     }
+
+    @ExceptionHandler(UrlExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleExpiredUrl(UrlExpiredException ex){
+        ErrorResponse error = new ErrorResponse(410 , ex.getMessage());
+        return ResponseEntity.status(410).body(error);
+    }
 }

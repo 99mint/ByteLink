@@ -29,7 +29,7 @@ public class UrlDetailsService {
         String shortUrl = shortCodeGenerator.base62Encode(urlDetails.getId());
         urlDetails.setShortUrl(shortUrl);
         urlDetails.setCreatedAt(LocalDateTime.now());
-        urlDetails.setExpiration(LocalDateTime.now().plusDays(90));
+        urlDetails.setActiveTill(LocalDateTime.now().plusDays(90));
         return urlDetailsRepository.save(urlDetails);
     }
 

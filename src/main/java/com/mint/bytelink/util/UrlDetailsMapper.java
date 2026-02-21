@@ -23,7 +23,7 @@ public class UrlDetailsMapper {
         urlDetailsResponseDTO.setShortUrl(urlDetails.getShortUrl());
         urlDetailsResponseDTO.setLongUrl(urlDetails.getLongUrl());
         urlDetailsResponseDTO.setCreatedAt(urlDetails.getCreatedAt());
-        urlDetailsResponseDTO.setExpiration(urlDetails.getExpiration());
+        urlDetailsResponseDTO.setExpiration(urlDetails.getActiveTill());
 
         return urlDetailsResponseDTO;
     }

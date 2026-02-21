@@ -19,6 +19,7 @@ A simple and efficient URL shortener service built with Spring Boot and MySQL.
 - ✅ Shorten long URLs to compact codes
 - ✅ Base62 encoding for short URL generation
 - ✅ Automatic URL expiration (90 days)
+- ✅ Click analytics
 - ✅ Update long URL for existing short codes
 - ✅ Delete URLs
 - ✅ Retrieve all short URLs for a given long URL
@@ -87,27 +88,7 @@ The application will start on `http://localhost:8080`
 ### Application Properties
 
 Located at `src/main/resources/application.yaml`:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/bytelink
-    username: root
-    password: your_password
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-```
-
-**Key Configuration Options:**
-- `ddl-auto: update` - Automatically updates database schema
-- `show-sql: true` - Shows SQL queries in console (useful for debugging)
+- Change Database password and username.
 
 ## 📡 API Endpoints
 
@@ -209,7 +190,8 @@ ByteLink/
 │   │   │   ├── exception/
 │   │   │   │   ├── ErrorResponse.java
 │   │   │   │   ├── GlobalExceptionHandler.java
-│   │   │   │   └── ResourceNotFoundException.java
+│   │   │   │   ├── ResourceNotFoundException.java
+│   │   │   │   └── UrlExpiredException.java
 │   │   │   ├── repository/
 │   │   │   │   └── UrlDetailsRepository.java
 │   │   │   ├── service/
@@ -287,9 +269,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+**Abhay Rajput**
+- GitHub: [@99mint](https://github.com/99mint)
+- Email: abhayyy2204@gmail.com
 
 ## 🙏 Acknowledgments
 

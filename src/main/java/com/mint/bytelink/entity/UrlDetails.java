@@ -29,7 +29,7 @@ public class UrlDetails {
 
     private LocalDateTime createdAt;
 
-    private LocalDateTime expiration;
+    private LocalDateTime activeTill;
 
     private Long clickCounts = 0L;
 }
