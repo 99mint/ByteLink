@@ -4,6 +4,7 @@ import com.mint.bytelink.entity.UrlDetails;
 import com.mint.bytelink.exception.ResourceNotFoundException;
 import com.mint.bytelink.repository.UrlDetailsRepository;
 import com.mint.bytelink.util.ShortCodeGenerator;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -58,10 +59,9 @@ public class UrlDetailsService {
         return urlDetailsRepository.getUrlDetailsByShortUrl(shortUrl).orElseThrow(() -> new ResourceNotFoundException("Short URL not found"));
     }
 
-    public void incrementClickCounter(String shortUrl){
-        UrlDetails urlDetails = urlDetailsRepository.getUrlDetailsByShortUrl(shortUrl).orElseThrow(() -> new RuntimeException("Short Url not found"));
-        urlDetails.setClickCounts(urlDetails.getClickCounts() + 1);
-        urlDetailsRepository.save(urlDetails);
+    @Transactional
+    public void incrementClickCounter (String shortUrl) {
+        urlDetailsRepository.incrementClickCounter(shortUrl);
     }
 
 }

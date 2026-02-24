@@ -2,6 +2,7 @@ package com.mint.bytelink.controller;
 
 import com.mint.bytelink.entity.UrlDetails;
 import com.mint.bytelink.exception.UrlExpiredException;
+import com.mint.bytelink.repository.UrlDetailsRepository;
 import com.mint.bytelink.service.ClickService;
 import com.mint.bytelink.service.UrlDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +21,8 @@ public class RedirectController {
     private final UrlDetailsService urlDetailsService;
     private final ClickService clickService;
 
-    public RedirectController(UrlDetailsService urlDetailsService, ClickService clickService) {
+    public RedirectController(UrlDetailsService urlDetailsService,
+                              ClickService clickService) {
         this.urlDetailsService = urlDetailsService;
         this.clickService = clickService;
     }
