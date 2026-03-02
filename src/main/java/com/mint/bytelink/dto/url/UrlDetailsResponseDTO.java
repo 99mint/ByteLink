@@ -1,4 +1,4 @@
-package com.mint.bytelink.dto;
+package com.mint.bytelink.dto.url;
 
 import lombok.Data;
 import java.time.LocalDateTime;

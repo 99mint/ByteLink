@@ -20,7 +20,11 @@ public class UrlDetails {
     private Long id;
 
     @OneToMany(mappedBy = "urlDetails" , cascade = CascadeType.ALL)
-    List<Click> clicks = new ArrayList<>();
+    private List<Click> clicks;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     private String longUrl;
 

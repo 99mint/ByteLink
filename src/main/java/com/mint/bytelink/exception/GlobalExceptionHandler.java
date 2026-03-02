@@ -24,4 +24,10 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(410 , ex.getMessage());
         return ResponseEntity.status(410).body(error);
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyExistsUser(UserAlreadyExistsException ex){
+        ErrorResponse error = new ErrorResponse(409 , ex.getMessage());
+        return ResponseEntity.status(409).body(error);
+    }
 }
