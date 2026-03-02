@@ -1,6 +1,10 @@
 package com.mint.bytelink.service;
 
 import com.mint.bytelink.dto.auth.AuthResponse;
+<<<<<<< HEAD
+=======
+import com.mint.bytelink.entity.RefreshToken;
+>>>>>>> d9dd750 (feat: implement JWT authentication and refresh token system)
 import com.mint.bytelink.entity.User;
 import com.mint.bytelink.exception.UserAlreadyExistsException;
 import com.mint.bytelink.repository.UserRepository;
@@ -20,6 +24,10 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+<<<<<<< HEAD
+=======
+    private final RefreshTokenService refreshTokenService;
+>>>>>>> d9dd750 (feat: implement JWT authentication and refresh token system)
 
     public void register(User user){
         if (userRepository.existsByEmail(user.getEmail()) ||
@@ -36,9 +44,33 @@ public class AuthenticationService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not Found"));
 
         String accessToken = jwtService.generateToken(new CustomUserDetails(user));
+<<<<<<< HEAD
         // Create RefreshTokenService and RefreshTokenRepository
         // also add RefreshToken System here.
 
         return new AuthResponse(accessToken , " ");
+=======
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(username);
+
+        return new AuthResponse(accessToken , refreshToken.getToken());
+    }
+
+    public AuthResponse refreshToken(String refreshTokenString) {
+        RefreshToken refreshToken = refreshTokenService.findByToken(refreshTokenString)
+                .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+
+        refreshTokenService.verifyExpiration(refreshToken);
+
+        User user = refreshToken.getUser();
+
+        String accessToken = jwtService.generateToken(new CustomUserDetails(user));
+
+        return new AuthResponse(accessToken, refreshToken.getToken());
+    }
+
+    public void logout(String refreshTokenString) {
+        refreshTokenService.revokeToken(refreshTokenString);
+>>>>>>> d9dd750 (feat: implement JWT authentication and refresh token system)
     }
 }

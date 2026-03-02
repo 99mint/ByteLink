@@ -2,6 +2,10 @@ package com.mint.bytelink.controller;
 
 import com.mint.bytelink.dto.auth.AuthResponse;
 import com.mint.bytelink.dto.auth.LogInRequestViaUsername;
+<<<<<<< HEAD
+=======
+import com.mint.bytelink.dto.auth.RefreshTokenRequest;
+>>>>>>> d9dd750 (feat: implement JWT authentication and refresh token system)
 import com.mint.bytelink.dto.auth.RegisterRequest;
 import com.mint.bytelink.service.AuthenticationService;
 import com.mint.bytelink.util.AuthMapper;
@@ -36,4 +40,19 @@ public class AuthenticationController {
                 logInRequest.getPassword());
         return ResponseEntity.ok(authResponse);
     }
+<<<<<<< HEAD
+=======
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        AuthResponse authResponse = authenticationService.refreshToken(request.getRefreshToken());
+        return ResponseEntity.ok(authResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequest request) {
+        authenticationService.logout(request.getRefreshToken());
+        return ResponseEntity.ok("Logged out successfully");
+    }
+>>>>>>> d9dd750 (feat: implement JWT authentication and refresh token system)
 }

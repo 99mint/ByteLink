@@ -1,10 +1,15 @@
 package com.mint.bytelink.service;
 
 import com.mint.bytelink.entity.UrlDetails;
+import com.mint.bytelink.entity.User;
 import com.mint.bytelink.exception.ResourceNotFoundException;
 import com.mint.bytelink.repository.UrlDetailsRepository;
+import com.mint.bytelink.repository.UserRepository;
+import com.mint.bytelink.security.CustomUserDetails;
 import com.mint.bytelink.util.ShortCodeGenerator;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,16 +20,37 @@ import java.util.List;
 public class UrlDetailsService {
     private final UrlDetailsRepository urlDetailsRepository;
     private final ShortCodeGenerator shortCodeGenerator;
+    private final UserRepository userRepository;
 
-    public UrlDetailsService(UrlDetailsRepository urlDetailsRepository , ShortCodeGenerator shortCodeGenerator) {
+    public UrlDetailsService(UrlDetailsRepository urlDetailsRepository,
+                             ShortCodeGenerator shortCodeGenerator,
+                             UserRepository userRepository) {
         this.urlDetailsRepository = urlDetailsRepository;
         this.shortCodeGenerator = shortCodeGenerator;
+        this.userRepository = userRepository;
     }
 
     public UrlDetails shortenUrl(String longUrl){
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("User must be authenticated to create shortened URLs");
+        }
+
+        String username;
+        if (authentication.getPrincipal() instanceof CustomUserDetails) {
+            username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+        } else {
+            username = authentication.getName();
+        }
+
+        User user = userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+
         UrlDetails urlDetails = new UrlDetails();
         urlDetails.setLongUrl(longUrl);
+        urlDetails.setUser(user);
         urlDetailsRepository.save(urlDetails);
 
         String shortUrl = shortCodeGenerator.base62Encode(urlDetails.getId());
