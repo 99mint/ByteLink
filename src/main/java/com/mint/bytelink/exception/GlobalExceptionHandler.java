@@ -1,5 +1,9 @@
 package com.mint.bytelink.exception;
 
+import com.mint.bytelink.exception.other.ResourceNotFoundException;
+import com.mint.bytelink.exception.other.UrlExpiredException;
+import com.mint.bytelink.exception.other.UrlValidationException;
+import com.mint.bytelink.exception.other.UserAlreadyExistsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,5 +33,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAlreadyExistsUser(UserAlreadyExistsException ex){
         ErrorResponse error = new ErrorResponse(409 , ex.getMessage());
         return ResponseEntity.status(409).body(error);
+    }
+
+    @ExceptionHandler(UrlValidationException.class)
+    public ResponseEntity<ErrorResponse> handleFakeUrls(UrlValidationException ex){
+        ErrorResponse error = new ErrorResponse(400 , ex.getMessage());
+        return ResponseEntity.status(400).body(error);
     }
 }

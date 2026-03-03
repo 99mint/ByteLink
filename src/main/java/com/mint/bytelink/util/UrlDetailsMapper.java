@@ -3,7 +3,7 @@ package com.mint.bytelink.util;
 import com.mint.bytelink.dto.url.UrlDetailsRequestDTO;
 import com.mint.bytelink.dto.url.UrlDetailsResponseDTO;
 import com.mint.bytelink.entity.UrlDetails;
-import com.mint.bytelink.exception.ResourceNotFoundException;
+import com.mint.bytelink.exception.other.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
