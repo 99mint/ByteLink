@@ -3,7 +3,7 @@ package com.mint.bytelink.service;
 import com.mint.bytelink.dto.auth.AuthResponse;
 import com.mint.bytelink.entity.RefreshToken;
 import com.mint.bytelink.entity.User;
-import com.mint.bytelink.exception.UserAlreadyExistsException;
+import com.mint.bytelink.exception.other.UserAlreadyExistsException;
 import com.mint.bytelink.repository.UserRepository;
 import com.mint.bytelink.security.CustomUserDetails;
 import com.mint.bytelink.security.JwtService;

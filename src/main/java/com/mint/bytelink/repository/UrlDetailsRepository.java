@@ -20,4 +20,9 @@ public interface UrlDetailsRepository extends JpaRepository<UrlDetails , Long> {
             nativeQuery = true
     )
     void incrementClickCounter(String shortUrl);
+
+    @Query("SELECT u.clickCounts FROM UrlDetails u WHERE u.shortUrl = :shortUrl")
+    Long totalClicksByShortUrl(String shortUrl);
+
+    boolean existsUrlDetailsByShortUrl(String shortUrl);
 }

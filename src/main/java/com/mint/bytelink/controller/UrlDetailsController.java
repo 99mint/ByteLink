@@ -5,6 +5,11 @@ import com.mint.bytelink.dto.url.UrlDetailsResponseDTO;
 import com.mint.bytelink.entity.UrlDetails;
 import com.mint.bytelink.service.UrlDetailsService;
 import com.mint.bytelink.util.UrlDetailsMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +21,9 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/links")
+
+@Tag(name = "URL Management", description = "API endpoints for creating and managing short URLs")
+
 public class UrlDetailsController {
 
     private final UrlDetailsService urlDetailsService;
@@ -28,6 +36,15 @@ public class UrlDetailsController {
     }
 
     @PostMapping("/create")
+
+    @Operation(summary = "Create short URL from long URL")
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Short URL generated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid URL format"),
+            @ApiResponse(responseCode = "401", description = "User is not authenticated")
+    })
+
     public ResponseEntity<UrlDetailsResponseDTO> shortenUrl(
             @Valid @RequestBody UrlDetailsRequestDTO urlDetailsRequestDTO)
             throws URISyntaxException {
@@ -48,7 +65,18 @@ public class UrlDetailsController {
     }
 
     @GetMapping
+
+    @Operation(summary = "Get all short URLs created for a given long URL")
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully fetched URLs"),
+            @ApiResponse(responseCode = "401", description = "User is not authenticated")
+    })
+
     public ResponseEntity<List<UrlDetailsResponseDTO>> getAllUrlsByLongUrl(
+
+            @Parameter(description = "Original long URL", example = "https://google.com")
+
             @RequestParam String longUrl) {
 
         log.info("Fetching all short URLs for longUrl: {}", longUrl);
@@ -66,7 +94,20 @@ public class UrlDetailsController {
     }
 
     @DeleteMapping("/{shortUrl}")
-    public void deleteUrlDetails(@PathVariable String shortUrl) {
+
+    @Operation(summary = "Delete a short URL")
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Short URL deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Short URL not found"),
+            @ApiResponse(responseCode = "401", description = "User is not authenticated")
+    })
+
+    public void deleteUrlDetails(
+
+            @Parameter(description = "Short URL code", example = "abc123")
+
+            @PathVariable String shortUrl) {
 
         log.info("Delete request received for shortUrl: {}", shortUrl);
 
@@ -76,8 +117,21 @@ public class UrlDetailsController {
     }
 
     @PutMapping("/{shortUrl}")
+
+    @Operation(summary = "Update the long URL for a given short URL")
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Short URL updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Short URL not found"),
+            @ApiResponse(responseCode = "401", description = "User is not authenticated")
+    })
+
     public ResponseEntity<UrlDetailsResponseDTO> changeLongUrl(
+
+            @Parameter(description = "Short URL code", example = "abc123")
+
             @PathVariable String shortUrl,
+
             @Valid @RequestBody UrlDetailsRequestDTO urlDetailsRequestDTO) {
 
         log.info("Update request received for shortUrl: {}",

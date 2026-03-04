@@ -23,4 +23,10 @@ public class Click {
     private LocalDateTime clickedAt;
 
     private String userAgent;
+
+    private String Ip;
+
+    private String country;
+
+    private String device;
 }

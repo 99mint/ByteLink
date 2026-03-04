@@ -15,9 +15,5 @@ spring:
 
 jwt:
   secret: ${SECRET_KEY}
-<<<<<<< HEAD
-  expiration: 3600000
-=======
   expiration: 3600000
   refresh-expiration: 604800000
->>>>>>> d9dd750 (feat: implement JWT authentication and refresh token system)

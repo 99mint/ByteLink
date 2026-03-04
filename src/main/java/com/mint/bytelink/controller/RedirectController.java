@@ -4,6 +4,11 @@ import com.mint.bytelink.entity.UrlDetails;
 import com.mint.bytelink.exception.other.UrlExpiredException;
 import com.mint.bytelink.service.ClickService;
 import com.mint.bytelink.service.UrlDetailsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +22,9 @@ import java.time.LocalDateTime;
 @Slf4j
 @RestController
 @RequestMapping("/r")
+
+@Tag(name = "Redirection management", description = "API endpoints for redirection and click recording")
+
 public class RedirectController {
 
     private final UrlDetailsService urlDetailsService;
@@ -29,7 +37,15 @@ public class RedirectController {
     }
 
     @GetMapping("/{shortUrl}")
-    public ResponseEntity<Void> redirect(@PathVariable String shortUrl , HttpServletRequest request) {
+    @Operation(summary = "Redirect to long url , record the click for analytics and increment the click counter")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "307" , description = "Redirection successful"),
+            @ApiResponse(responseCode = "404" , description = "This Short url does not exist"),
+            @ApiResponse(responseCode = "410" , description = "This url has been expired")
+    })
+    public ResponseEntity<Void> redirect(
+            @Parameter(description = "Short URL", example = "01111")
+            @PathVariable String shortUrl , HttpServletRequest request) {
 
         log.info("Redirect request received for shortUrl: {}", shortUrl);
 

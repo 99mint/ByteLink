@@ -1,7 +1,6 @@
 package com.mint.bytelink.security;
 
 import com.mint.bytelink.entity.User;
-import lombok.Data;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
