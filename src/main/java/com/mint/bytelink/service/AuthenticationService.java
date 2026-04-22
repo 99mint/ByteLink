@@ -3,6 +3,7 @@ package com.mint.bytelink.service;
 import com.mint.bytelink.dto.auth.AuthResponse;
 import com.mint.bytelink.entity.RefreshToken;
 import com.mint.bytelink.entity.User;
+import com.mint.bytelink.exception.other.ResourceNotFoundException;
 import com.mint.bytelink.exception.other.UserAlreadyExistsException;
 import com.mint.bytelink.repository.UserRepository;
 import com.mint.bytelink.security.CustomUserDetails;
@@ -46,7 +47,7 @@ public class AuthenticationService {
 
     public AuthResponse refreshToken(String refreshTokenString) {
         RefreshToken refreshToken = refreshTokenService.findByToken(refreshTokenString)
-                .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Refresh token not found"));
 
         refreshTokenService.verifyExpiration(refreshToken);
 

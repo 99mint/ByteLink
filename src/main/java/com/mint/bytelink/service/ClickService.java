@@ -8,9 +8,13 @@ import com.mint.bytelink.entity.UrlDetails;
 import com.mint.bytelink.exception.other.ResourceNotFoundException;
 import com.mint.bytelink.repository.ClickRepository;
 import com.mint.bytelink.repository.UrlDetailsRepository;
+import com.mint.bytelink.security.CustomUserDetails;
 import com.mint.bytelink.util.GeoIP;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -53,9 +57,10 @@ public class ClickService {
     }
 
     public AnalyticsDTO provideAnalytics(String shortUrl){
-        if (!urlDetailsRepository.existsUrlDetailsByShortUrl(shortUrl)){
-            throw new ResourceNotFoundException("Short url doesn't exist");
-        }
+        UrlDetails urlDetails = urlDetailsRepository.getUrlDetailsByShortUrl(shortUrl)
+                .orElseThrow(() -> new ResourceNotFoundException("Short url doesn't exist"));
+
+        verifyOwnership(urlDetails);
 
         log.info("Providing analytics for short url {}", shortUrl);
         AnalyticsDTO analytics = new AnalyticsDTO();
@@ -97,4 +102,25 @@ public class ClickService {
 
         return "Desktop";
     }
+
+    private void verifyOwnership(UrlDetails urlDetails) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User must be authenticated");
+        }
+
+        String currentUser;
+        if (authentication.getPrincipal() instanceof CustomUserDetails) {
+            currentUser = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+        } else {
+            currentUser = authentication.getName();
+        }
+
+        if (!urlDetails.getUser().getUsername().equals(currentUser)) {
+            log.warn("User '{}' attempted to access analytics for URL owned by '{}'",
+                    currentUser, urlDetails.getUser().getUsername());
+            throw new AccessDeniedException("You do not have permission to access this resource");
+        }
+    }
 }
+

@@ -3,6 +3,7 @@ package com.mint.bytelink.service;
 import com.mint.bytelink.entity.RefreshToken;
 import com.mint.bytelink.entity.User;
 import com.mint.bytelink.exception.other.ResourceNotFoundException;
+import com.mint.bytelink.exception.security.InvalidTokenException;
 import com.mint.bytelink.repository.RefreshTokenRepository;
 import com.mint.bytelink.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -73,13 +74,13 @@ public class RefreshTokenService {
             log.warn("Expired refresh token detected for username: {}",
                     token.getUser().getUsername());
             refreshTokenRepository.delete(token);
-            throw new RuntimeException("Refresh token has expired. Please login again.");
+            throw new InvalidTokenException("Refresh token has expired. Please login again.");
         }
 
         if (token.isRevoked()) {
             log.warn("Revoked refresh token used by username: {}",
                     token.getUser().getUsername());
-            throw new RuntimeException("Refresh token has been revoked. Please login again.");
+            throw new InvalidTokenException("Refresh token has been revoked. Please login again.");
         }
 
         return token;

@@ -9,6 +9,6 @@ import org.hibernate.validator.constraints.URL;
 public class UrlDetailsRequestDTO {
     @URL
     @NotNull(message = "Enter a valid Url")
-    @Schema(example = "https//:www.example.com")
+    @Schema(example = "https://www.example.com")
     private String longUrl;
 }

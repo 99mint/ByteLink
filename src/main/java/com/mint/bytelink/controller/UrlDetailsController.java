@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URISyntaxException;
 import java.util.List;
 
 @Slf4j
@@ -46,8 +45,7 @@ public class UrlDetailsController {
     })
 
     public ResponseEntity<UrlDetailsResponseDTO> shortenUrl(
-            @Valid @RequestBody UrlDetailsRequestDTO urlDetailsRequestDTO)
-            throws URISyntaxException {
+            @Valid @RequestBody UrlDetailsRequestDTO urlDetailsRequestDTO) {
 
         log.info("Shorten URL request received for longUrl: {}",
                 urlDetailsRequestDTO.getLongUrl());
@@ -103,7 +101,7 @@ public class UrlDetailsController {
             @ApiResponse(responseCode = "401", description = "User is not authenticated")
     })
 
-    public void deleteUrlDetails(
+    public ResponseEntity<Void> deleteUrlDetails(
 
             @Parameter(description = "Short URL code", example = "abc123")
 
@@ -114,6 +112,8 @@ public class UrlDetailsController {
         urlDetailsService.deleteUrl(shortUrl);
 
         log.info("ShortUrl '{}' deleted successfully", shortUrl);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{shortUrl}")

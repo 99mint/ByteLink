@@ -14,7 +14,7 @@ A production-ready URL shortener service built with Spring Boot, MySQL, and JWT 
 
 ## 🛠 Tech Stack
 
-- **Backend:** Spring Boot 3.4.0, Java 25
+- **Backend:** Spring Boot 3.3.5, Java 17
 - **Database:** MySQL 8.0
 - **Security:** Spring Security 7.0 + JWT
 - **ORM:** Spring Data JPA / Hibernate

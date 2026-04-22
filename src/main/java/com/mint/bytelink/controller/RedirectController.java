@@ -58,8 +58,8 @@ public class RedirectController {
             throw new UrlExpiredException("This link has been expired");
         }
 
-        urlDetailsService.incrementClickCounter(urlDetails.getShortUrl());
         clickService.recordClick(urlDetails, request);
+        urlDetailsService.incrementClickCounter(urlDetails.getShortUrl());
 
         log.info("Redirect successful for shortUrl: {} -> {}",
                 shortUrl, urlDetails.getLongUrl());

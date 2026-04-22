@@ -24,7 +24,7 @@ public class Click {
 
     private String userAgent;
 
-    private String Ip;
+    private String ip;
 
     private String country;
 

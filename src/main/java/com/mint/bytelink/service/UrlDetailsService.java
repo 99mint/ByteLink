@@ -11,12 +11,12 @@ import com.mint.bytelink.util.ShortCodeGenerator;
 import com.mint.bytelink.util.UrlValidator;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,8 @@ public class UrlDetailsService {
         this.urlValidator = urlValidator;
     }
 
-    public UrlDetails shortenUrl(String longUrl) throws URISyntaxException {
+    @Transactional
+    public UrlDetails shortenUrl(String longUrl) {
 
         log.info("Shorten URL request received for longUrl: {}", longUrl);
 
@@ -76,7 +77,7 @@ public class UrlDetailsService {
         return saved;
     }
 
-    private static String getCurrentUser() {
+    private String getCurrentUser() {
 
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
@@ -109,6 +110,13 @@ public class UrlDetailsService {
                             return new ResourceNotFoundException("This Short Url does not exist");
                         });
 
+        verifyOwnership(urlDetails);
+
+        if (!urlValidator.isValid(longUrl)) {
+            log.warn("URL validation failed for: {}", longUrl);
+            throw new UrlValidationException("Enter a url with http or https protocol");
+        }
+
         urlDetails.setLongUrl(longUrl);
 
         UrlDetails updated = urlDetailsRepository.save(urlDetails);
@@ -128,6 +136,8 @@ public class UrlDetailsService {
                             log.warn("Delete failed - shortUrl not found: {}", shortUrl);
                             return new ResourceNotFoundException("This Short Url does not exist");
                         });
+
+        verifyOwnership(urlDetails);
 
         urlDetailsRepository.delete(urlDetails);
 
@@ -178,4 +188,14 @@ public class UrlDetailsService {
 
         urlDetailsRepository.incrementClickCounter(shortUrl);
     }
+
+    private void verifyOwnership(UrlDetails urlDetails) {
+        String currentUser = getCurrentUser();
+        if (!urlDetails.getUser().getUsername().equals(currentUser)) {
+            log.warn("User '{}' attempted to access URL owned by '{}'",
+                    currentUser, urlDetails.getUser().getUsername());
+            throw new AccessDeniedException("You do not have permission to access this resource");
+        }
+    }
 }
+

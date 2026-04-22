@@ -11,7 +11,7 @@ public class UrlValidator {
     private static final Set<String> BLOCKED_PROTOCOLS = Set.of("javascript", "data", "file");
     private static final Set<String> ALLOWED_PROTOCOLS = Set.of("http", "https");
 
-    public boolean isValid(String url) throws URISyntaxException {
+    public boolean isValid(String url) {
         try {
             URI uri = new URI(url);
             String scheme = uri.getScheme();

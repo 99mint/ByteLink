@@ -12,7 +12,7 @@ public interface ClickRepository extends JpaRepository<Click, Long> {
     @Query("SELECT c.userAgent FROM Click c WHERE c.urlDetails.shortUrl = :shortUrl")
     List<String> findUserAgentsByShortUrl(String shortUrl);
 
-    @Query("SELECT c.Ip FROM Click c WHERE c.urlDetails.shortUrl = :shortUrl")
+    @Query("SELECT c.ip FROM Click c WHERE c.urlDetails.shortUrl = :shortUrl")
     List<String> findIpByShortUrl(String shortUrl);
 
     @Query("SELECT new com.mint.bytelink.dto.analytics.DeviceClicks(c.device, COUNT(c)) FROM Click c WHERE c.urlDetails.shortUrl = :shortUrl GROUP BY c.device ORDER BY COUNT(c) DESC")
