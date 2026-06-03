@@ -59,15 +59,16 @@ public class UrlDetailsService {
                     return new UsernameNotFoundException("User not found");
                 });
 
+        LocalDateTime now = LocalDateTime.now();
         UrlDetails urlDetails = new UrlDetails();
         urlDetails.setLongUrl(longUrl);
         urlDetails.setUser(user);
+        urlDetails.setCreatedAt(now);
+        urlDetails.setActiveTill(now.plusDays(90));
         urlDetailsRepository.save(urlDetails);
 
         String shortUrl = shortCodeGenerator.base62Encode(urlDetails.getId());
         urlDetails.setShortUrl(shortUrl);
-        urlDetails.setCreatedAt(LocalDateTime.now());
-        urlDetails.setActiveTill(LocalDateTime.now().plusDays(90));
 
         UrlDetails saved = urlDetailsRepository.save(urlDetails);
 

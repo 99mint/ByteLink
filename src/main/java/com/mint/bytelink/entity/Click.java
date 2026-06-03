@@ -26,7 +26,5 @@ public class Click {
 
     private String ip;
 
-    private String country;
-
     private String device;
 }

@@ -59,7 +59,6 @@ public class RedirectController {
         }
 
         clickService.recordClick(urlDetails, request);
-        urlDetailsService.incrementClickCounter(urlDetails.getShortUrl());
 
         log.info("Redirect successful for shortUrl: {} -> {}",
                 shortUrl, urlDetails.getLongUrl());

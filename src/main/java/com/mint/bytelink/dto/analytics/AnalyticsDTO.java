@@ -9,8 +9,6 @@ public class AnalyticsDTO {
 
     private Long totalClicks;
 
-    private List<CountryClicks> topCountries;
-
     private List<DeviceClicks> topDevices;
 
 }

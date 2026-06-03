@@ -1,7 +1,6 @@
 package com.mint.bytelink.service;
 
 import com.mint.bytelink.dto.analytics.AnalyticsDTO;
-import com.mint.bytelink.dto.analytics.CountryClicks;
 import com.mint.bytelink.dto.analytics.DeviceClicks;
 import com.mint.bytelink.entity.Click;
 import com.mint.bytelink.entity.UrlDetails;
@@ -9,13 +8,13 @@ import com.mint.bytelink.exception.other.ResourceNotFoundException;
 import com.mint.bytelink.repository.ClickRepository;
 import com.mint.bytelink.repository.UrlDetailsRepository;
 import com.mint.bytelink.security.CustomUserDetails;
-import com.mint.bytelink.util.GeoIP;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,16 +25,14 @@ public class ClickService {
 
     private final ClickRepository clickRepository;
     private final UrlDetailsRepository urlDetailsRepository;
-    private final GeoIP geoIPService;
 
     public ClickService(ClickRepository clickRepository,
-                        UrlDetailsRepository urlDetailsRepository,
-                        GeoIP geoIPService) {
+                        UrlDetailsRepository urlDetailsRepository) {
         this.clickRepository = clickRepository;
         this.urlDetailsRepository = urlDetailsRepository;
-        this.geoIPService = geoIPService;
     }
 
+    @Transactional
     public void recordClick(UrlDetails urlDetails,
                             HttpServletRequest request) {
 
@@ -47,10 +44,11 @@ public class ClickService {
         click.setUserAgent(request.getHeader("User-Agent"));
         click.setUrlDetails(urlDetails);
         click.setIp(request.getRemoteAddr());
-        click.setCountry(geoIPService.getCountry(request.getRemoteAddr()));
         click.setDevice(getDeviceType(request.getHeader("User-Agent")));
 
         clickRepository.save(click);
+
+        urlDetailsRepository.incrementClickCounter(urlDetails.getShortUrl());
 
         log.debug("Click recorded successfully for shortUrl: {}",
                 urlDetails.getShortUrl());
@@ -67,14 +65,9 @@ public class ClickService {
 
         analytics.setTotalClicks(urlDetailsRepository.totalClicksByShortUrl(shortUrl));
         analytics.setTopDevices(topDevices(shortUrl));
-        analytics.setTopCountries(topCountries(shortUrl));
 
         log.info("Returning analytics for short url : {}" , shortUrl);
         return analytics;
-    }
-
-    public List<CountryClicks> topCountries(String shortUrl){
-        return clickRepository.getCountryFrequency(shortUrl);
     }
 
     public List<DeviceClicks> topDevices(String shortUrl){
